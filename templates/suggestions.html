@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Suggested Itinerary
+{% endblock %}
+
+{% block body_class %}
+    suggestion-page
+{% endblock %}
+
+{% block main %}
+    <div class="card mx-auto" style="max-width: 650px;">
+        <div class="card-header">
+            <h4 class="card-title">Generated Plan</h4>
+        </div>
+        <div class="card-body">
+            <p style="white-space: pre-line" class="card-text">{{ generated_plan }}</p>
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+            <form method="post" action="/regenerate">
+                <button type="submit" id="Regenerate" class="btn btn-primary">Regenerate</button>
+            </form>
+            <form method="post" action="/save_plan">
+                <input type="hidden" name="plan_details" value="{{ generated_plan }}">
+                <button type="submit" class="btn btn-success">Save Plan</button>
+            </form>
+            <a href="/feedback" class="btn btn-info">Give Feedback</a>
+        </div>
+
+        <div id="loading-spinner" class="loading-spinner">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("Regenerate").addEventListener("click", function() {
+        document.getElementById("loading-spinner").style.display = "block";
+        });
+    </script>
+{% endblock %}

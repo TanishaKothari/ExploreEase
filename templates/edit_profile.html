@@ -1,0 +1,66 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Change Account Details
+{% endblock %}
+
+{% block body_class %}
+    edit_profile-page
+{% endblock %}
+
+{% block main %}
+    <h1><span style="font-family: Montserrat">Change Account Details</span></h1>
+    <!-- Give options to change username and password -->
+    <!-- If user clicks "Change username" ask for new username -->
+    <!-- If user clicks "Change password" ask for current password, new password, confirm new password -->
+
+    <!-- Create links for Change Username and Change Password which will then display the correct form -->
+    <button id="change_username" value="change_username" onClick="">Change Username</button>
+    <button id="change_password" value="change_password" onClick="">Change Password</button>
+    <button style="background-color:red" id="delete_account" value="delete_account" onClick="">Delete Account</button><br><br>
+
+    <!-- Show the form for new username -->
+    <form id="username_form" style="display:none" action="/change_username" method="post">
+        <input type="text" placeholder="New Username" name="new_username" required>
+        <button type="submit">Change Username</button>
+    </form><br>
+
+    <!-- Show the form for current, new password and confirm password -->
+    <form id="password_form" style="display:none" action="/change_password" method="post">
+        <input type="text" placeholder="Current Password" autocomplete="off" name="current_password" required>
+        <input type="text" placeholder="New Password" autocomplete="off" name="new_password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" 
+        oninvalid="this.setCustomValidity('Password must be at least 8 characters and contain at least one uppercase, lowercase, and digit')"
+        oninput="this.setCustomValidity('')">
+        <input type="text" placeholder="Confirm New Password" autocomplete="off" name="confirm_password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" 
+        oninvalid="this.setCustomValidity('Password must be at least 8 characters and contain at least one uppercase, lowercase, and digit')"
+        oninput="this.setCustomValidity('')">
+        <button type="submit">Change Password</button>
+    </form>
+
+    <!-- Confirm account deletion with current password -->
+    <form id="delete_account_form" style="display:none" action="/delete_account" method="post">
+        <input type="text" placeholder="Current Password" autocomplete="off" name="current_password" required>
+        <button style="background-color:red" type="submit">Delete Account</button>
+    </form>
+
+    <script type="text/javascript">
+        var changeUsernameButton = document.getElementById("change_username");
+        var changePasswordButton = document.getElementById("change_password");
+        var deleteAccountButton = document.getElementById("delete_account");
+        changeUsernameButton.onclick = function(){
+            document.getElementById("username_form").style.display ="inline";
+            document.getElementById("password_form").style.display="none";
+            document.getElementById("delete_account_form").style.display="none";
+        }
+        changePasswordButton.onclick = function(){
+            document.getElementById("username_form").style.display ="none";
+            document.getElementById("password_form").style.display="inline";
+            document.getElementById("delete_account_form").style.display="none";
+        }
+        deleteAccountButton.onclick = function(){
+            document.getElementById("username_form").style.display ="none";
+            document.getElementById("password_form").style.display="none";
+            document.getElementById("delete_account_form").style.display="inline";
+        }
+    </script>
+{% endblock %}

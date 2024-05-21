@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Register
+{% endblock %}
+
+{% block body_class %}
+    register-page
+{% endblock %}
+
+{% block main %}
+    <style>
+        body::before{
+            content: "";
+                background-image: url(https://static.toiimg.com/thumb/msid-92089121,width-748,height-499,resizemode=4,imgsize-139308/.jpg);
+                position: fixed;
+                inset: 0;
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                z-index: -10;
+        }
+    </style>
+    <div class="register_form" style="background-color: rgba(121, 85, 99, 0.35);">
+        <h1 style="color: rgb(180, 148, 255);">Register</h1><br>
+        <form action="/register" method="POST">
+            <div class="mb-3">
+                <input type="text" placeholder="Username" autocomplete="off" autofocus class="form-control mx-auto w-auto" id="username" name="username" required>
+            </div>
+            <div class="mb-3">
+                <input type="password" placeholder="Password" class="form-control mx-auto w-auto" id="password" name="password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" 
+                    oninvalid="this.setCustomValidity('Password must be at least 8 characters and contain at least one uppercase, lowercase, and digit')"
+                    oninput="this.setCustomValidity('')">
+            </div>
+            <div class="mb-3">
+                <input type="password" placeholder="Confirm Password" class="form-control mx-auto w-auto" id="confirmation" name="confirmation" required>
+            </div>
+
+            <button type="submit">Register</button>
+        </form>
+    </div>
+{% endblock %}

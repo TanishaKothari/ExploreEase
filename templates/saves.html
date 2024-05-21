@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Saved Itineraries
+{% endblock %}
+
+{% block body_class %}
+    saves-page
+{% endblock %}
+
+{% block main %}
+    <style>
+        .padding{
+            padding-bottom: 20px;
+            padding-top: 10px;
+            background-color: #fbeeff;
+            background-clip: padding-box;
+        }
+    </style>
+
+    <h1>Saved Itineraries</h1>
+    <div id="saved-plans">
+        {% set plan_no = [1] %}
+        {% for plan in saved_plans %}
+            <div style="background-color: {{ ["#FFCCCC", "#E9F1FA", "#effaf6", "#B6E1E7", "#DDD0C8", "#CCFFCC", "#CCCCFF", "#FFFFCC"]|random }}">
+            <h2>PLAN {{ plan_no|join('') }}</h2>
+            <form method="post" action="/delete_saved_plans">
+                <button type="submit" class="btn btn-danger">Delete Plan</button>
+                <input type="hidden" name="plan_id" value="{{ plan[0] }}">
+            </form>
+            <p style="white-space: pre-wrap">{{ plan[1] }}</p>
+            {% if plan_no.append(plan_no.pop() + 1) %}{% endif %}
+            <div class="padding"></div>
+        {% endfor %}
+    </div>
+{% endblock %}
