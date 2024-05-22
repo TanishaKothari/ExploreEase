@@ -57,7 +57,6 @@ def index():
 # Validate login
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    """Log user in"""
     con = sqlite3.connect('explore_ease.db')
     cursor = con.cursor()
 
@@ -66,16 +65,6 @@ def login():
 
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
-        # Ensure username was submitted
-        if not request.form.get("username"):
-            flash("Must provide a username")
-            return redirect("/login")
-
-        # Ensure password was submitted
-        elif not request.form.get("password"):
-            flash("Must provide a password")
-            return redirect("/login")
-
         # Query database for username
         cursor.execute("SELECT * FROM users WHERE username = ?", (request.form.get("username"),))
         rows = cursor.fetchall()
@@ -85,10 +74,9 @@ def login():
 
         # Ensure username exists and password is correct
         if len(rows) != 1 or not check_password_hash(rows[0][2], request.form.get("password")):
-            print(rows)
-            flash("Invalid username and/or password")
+            flash("Invalid username and/or password.")
             return redirect("/login")
-
+        
         # Remember which user has logged in
         session["user_id"] = rows[0][0]
         session["username"] = rows[0][1]
@@ -132,14 +120,8 @@ def register():
         confirmation = request.form.get("confirmation")
 
         # Validate inputs
-        if not username:
-            flash("Username cannot be blank.")
-            return redirect("/register")
         if cursor.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone() is not None:
             flash("Username already exists.")
-            return redirect("/register")
-        if not password or not confirmation:
-            flash("Password fields cannot be blank.")
             return redirect("/register")
         if password != confirmation:
             flash("Passwords do not match.")
