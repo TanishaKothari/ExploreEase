@@ -2,4 +2,5 @@ gunicorn
 ordereddict
 flask
 flask_session
+python-dotenv
 crewai
