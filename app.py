@@ -368,7 +368,7 @@ def generate_itinerary():
 
     os.environ["OPENAI_API_BASE"] = "https://api.groq.com/openai/v1"
     os.environ["OPENAI_MODEL_NAME"] = "llama3-70b-8192"
-    os.environ["OPENAI_API_KEY"] = os.environ.get('key')
+    os.environ["OPENAI_API_KEY"] = str(os.environ.get('key'))
 
     criteria = f"duration: {user_input[4]}, destination: {user_input[2]}, first month: {user_input[6]}, budget: {user_input[3]}, pace: {user_input[5]}, interests: {user_input[7]}, dietary restrictions: {user_input[8]}"
 
