@@ -24,6 +24,7 @@ Explore Ease is a web application designed to help users create personalized tra
 2. Navigate to the project directory: `cd explore-ease`
 3. Install the required dependencies: `pip install flask werkzeug sqlite3 flask_session openai`
 4. Run the application: `python app.py`
+5. The API key is stored in the .env file.
 
 ## Usage
 1. Acess the web application by navigating to http://localhost:5000 in your browser.
