@@ -398,7 +398,7 @@ def generate_itinerary():
     cursor.close()
     con.close()
 
-    global generated_itinerary
+    global generated_itinerary = itinerary
     # generated_itinerary = itinerary.replace("*","")
     return generated_itinerary
 
