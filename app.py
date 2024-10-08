@@ -212,9 +212,6 @@ def save_plan():
     # Store the plan in the database
     con = get_db_connection()
     cursor = con.cursor()
-
-    print('saved plan=', generated_itinerary)
-    
     cursor.execute('''
         INSERT INTO saved_plans (user_id, plan_details)
         VALUES (%s, %s)
