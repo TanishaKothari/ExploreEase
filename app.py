@@ -18,7 +18,6 @@ Session(app)
 
 # MySQL connection
 def get_db_connection():
-    #mysql://l52llh4xlq2vw94p:hx6tajmwcbkgh48t@wyqk6x041tfxg39e.chr7pe7iynqr.eu-west-1.rds.amazonaws.com:3306/egruayjqwpal4o9f
     return mysql.connector.connect(
         host=os.getenv("DB_HOST"),
         user=os.getenv("DB_USER"),
