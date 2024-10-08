@@ -1,10 +1,10 @@
 from flask import Flask, flash, render_template, redirect, session, request
-import sqlite3
 from werkzeug.security import check_password_hash, generate_password_hash
 from utilities import login_required
 from flask_session import Session
 import os
 from crewai import Agent, Task, Crew, Process
+import mysql.connector
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -16,32 +16,46 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-con = sqlite3.connect('explore_ease.db')
+# MySQL connection
+def get_db_connection():
+    #mysql://l52llh4xlq2vw94p:hx6tajmwcbkgh48t@wyqk6x041tfxg39e.chr7pe7iynqr.eu-west-1.rds.amazonaws.com:3306/egruayjqwpal4o9f
+    return mysql.connector.connect(
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASS"),
+        database=os.getenv("DB_NAME"),
+        port=os.getenv("DB_PORT")
+    )
+    
+con = get_db_connection()
 cursor = con.cursor()
 
 cursor.execute('''
-    CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, username TEXT NOT NULL, 
-    hash TEXT NOT NULL)''')
+    CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL, username VARCHAR(255) NOT NULL, 
+    hash VARCHAR(255) NOT NULL)''')
 
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS user_input (
-        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, user_id INTEGER NOT NULL,
-        destination TEXT NOT NULL, budget INTEGER, duration INTEGER, pace TEXT,
-        months TEXT, interests TEXT, dietary_restrictions TEXT,
+        id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL, user_id INTEGER NOT NULL,
+        destination VARCHAR(255) NOT NULL, budget INTEGER, duration INTEGER, pace VARCHAR(7),
+        months VARCHAR(50), interests TEXT, dietary_restrictions TEXT,
         FOREIGN KEY (user_id) REFERENCES users(id))''')
 
 cursor.execute('''
-    CREATE TABLE IF NOT EXISTS saved_plans (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    CREATE TABLE IF NOT EXISTS saved_plans (id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
         user_id INTEGER NOT NULL, plan_details TEXT NOT NULL,
         FOREIGN KEY (user_id) REFERENCES users(id))''')
 
 cursor.execute('''
-    CREATE TABLE IF NOT EXISTS feedback (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    CREATE TABLE IF NOT EXISTS feedback (id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
         user_id INTEGER NOT NULL, feedback TEXT NOT NULL,
         FOREIGN KEY (user_id) REFERENCES users(id))''')
 
+con.commit()
 cursor.close()
 con.close()
+
+generated_itinerary = ''
 
 @app.after_request
 def after_request(response):
@@ -60,7 +74,7 @@ def index():
 # Validate login
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    con = sqlite3.connect('explore_ease.db')
+    con = get_db_connection()
     cursor = con.cursor()
 
     # Forget any user_id
@@ -69,7 +83,7 @@ def login():
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
         # Query database for username
-        cursor.execute("SELECT * FROM users WHERE username = ?", (request.form.get("username"),))
+        cursor.execute("SELECT * FROM users WHERE username = %s", (request.form.get("username"),))
         rows = cursor.fetchall()
 
         cursor.close()
@@ -95,9 +109,9 @@ def login():
 def logout():
     """Log user out"""
     # Delete stored user input
-    con = sqlite3.connect('explore_ease.db')
+    con = get_db_connection()
     cursor = con.cursor()
-    cursor.execute("DELETE FROM user_input WHERE user_id = ?", (session["user_id"],))
+    cursor.execute("DELETE FROM user_input WHERE user_id = %s", (session["user_id"],))
     con.commit()
     cursor.close()
     con.close()
@@ -113,7 +127,7 @@ def logout():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Register user"""
-    con = sqlite3.connect('explore_ease.db')
+    con = get_db_connection()
     cursor = con.cursor()
 
     if request.method == "POST":
@@ -123,7 +137,8 @@ def register():
         confirmation = request.form.get("confirmation")
 
         # Validate inputs
-        if cursor.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone() is not None:
+        cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+        if cursor.fetchone() is not None:
             flash("Username already exists.")
             return redirect("/register")
         if password != confirmation:
@@ -131,7 +146,7 @@ def register():
             return redirect("/register")
 
         hashed_password = generate_password_hash(password)
-        cursor.execute("INSERT INTO users (username, hash) VALUES(?, ?)", (username, hashed_password))
+        cursor.execute("INSERT INTO users (username, hash) VALUES(%s, %s)", (username, hashed_password))
         con.commit()
         return redirect("/login")
 
@@ -145,7 +160,7 @@ def register():
 @login_required
 def get_suggestions():
     if request.method == 'POST':
-        con = sqlite3.connect('explore_ease.db')
+        con = get_db_connection()
         cursor = con.cursor()
         # Get user input from the form
         input_dict = {
@@ -157,19 +172,19 @@ def get_suggestions():
             'interests': request.form.getlist('interests'),
             'dietary_restrictions': request.form.getlist('dietary_restrictions'),
         }
-        cursor.execute("SELECT * FROM user_input WHERE user_id = ?", (session["user_id"],))
+        cursor.execute("SELECT * FROM user_input WHERE user_id = %s", (session["user_id"],))
         user_input = cursor.fetchone()
 
         if user_input is not None:
             cursor.execute('''
-                UPDATE user_input SET duration =?, destination =?, months =?, budget =?, pace =?, interests =?, dietary_restrictions =? WHERE user_id =?''',  
+                UPDATE user_input SET duration =%s, destination =%s, months =%s, budget =%s, pace =%s, interests =%s, dietary_restrictions =%s WHERE user_id =%s''',  
                 (input_dict['duration'], input_dict['destination'], input_dict['months'], input_dict['budget'], input_dict['pace'],
                 ','.join(input_dict['interests']), ','.join(input_dict['dietary_restrictions']), session["user_id"]))
             con.commit()
         else:
             cursor.execute('''
                 INSERT INTO user_input (user_id, duration, destination, months, budget, pace, interests, dietary_restrictions)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)''', 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)''', 
                 (session["user_id"], input_dict['duration'], input_dict['destination'], input_dict['months'], input_dict['budget'], input_dict['pace'],
                 ','.join(input_dict['interests']), ','.join(input_dict['dietary_restrictions'])))
             con.commit()
@@ -196,11 +211,11 @@ def regenerate():
 @login_required
 def save_plan():
     # Store the plan in the database
-    con = sqlite3.connect('explore_ease.db')
+    con = get_db_connection()
     cursor = con.cursor()
     cursor.execute('''
         INSERT INTO saved_plans (user_id, plan_details)
-        VALUES (?, ?)
+        VALUES (%s, %s)
     ''', (session["user_id"], generated_itinerary))
     con.commit()
     cursor.close()
@@ -214,9 +229,9 @@ def save_plan():
 @app.route("/saved_plans")
 @login_required
 def saved_plans():
-    con = sqlite3.connect('explore_ease.db')
+    con = get_db_connection()
     cursor = con.cursor()
-    cursor.execute("SELECT id, plan_details FROM saved_plans WHERE user_id = ?", (session["user_id"],))
+    cursor.execute("SELECT id, plan_details FROM saved_plans WHERE user_id = %s", (session["user_id"],))
     saved_plans = cursor.fetchall()
     cursor.close()
     con.close()
@@ -229,9 +244,9 @@ def saved_plans():
 @login_required
 def delete_saved_plans():
     plan_id = request.form.get('plan_id')
-    con = sqlite3.connect('explore_ease.db')
+    con = get_db_connection()
     cursor = con.cursor()
-    cursor.execute("DELETE FROM saved_plans WHERE id = ? AND user_id = ?", (plan_id, session["user_id"]))
+    cursor.execute("DELETE FROM saved_plans WHERE id = %s AND user_id = %s", (plan_id, session["user_id"]))
     con.commit()
     cursor.close()
     con.close()
@@ -244,18 +259,18 @@ def delete_saved_plans():
 @login_required
 def feedback():
     if request.method == 'POST':
-        con = sqlite3.connect('explore_ease.db')
+        con = get_db_connection()
         cursor = con.cursor()
         # Get user input from the form
         feedback = request.form.get("feedback")
         cursor.execute('''
             INSERT INTO feedback (user_id, feedback)
-            VALUES (?, ?)
+            VALUES (%s, %s)
         ''', (session["user_id"], feedback))
         con.commit()
         flash("Feedback submitted successfully!")
         return redirect("/")
-    con = sqlite3.connect('explore_ease.db')
+    con = get_db_connection()
     cursor = con.cursor()
     cursor.execute("SELECT feedback FROM feedback")
     feedbacks = cursor.fetchall()
@@ -275,10 +290,10 @@ def edit_profile():
 @login_required
 def change_password():
     if request.method == 'POST':
-        con = sqlite3.connect('explore_ease.db')
+        con = get_db_connection()
         cursor = con.cursor()
         
-        cursor.execute("SELECT * FROM users WHERE username = ?", (session["username"],))
+        cursor.execute("SELECT * FROM users WHERE username = %s", (session["username"],))
         rows = cursor.fetchall()
 
         # Ensure current password entered is correct
@@ -294,7 +309,7 @@ def change_password():
             flash("Passwords do not match")
             return redirect("/edit_profile")
         cursor.execute('''
-            UPDATE users SET hash = ? WHERE id = ?
+            UPDATE users SET hash = %s WHERE id = %s
             ''', (generate_password_hash(new_password), session["user_id"]))
         con.commit()
         cursor.close()
@@ -309,17 +324,18 @@ def change_password():
 @login_required
 def change_username():
     if request.method == 'POST':
-        con = sqlite3.connect('explore_ease.db')
+        con = get_db_connection()
         cursor = con.cursor()
 
         # Change username if new one is available
         new_username = request.form.get("new_username")
-        if cursor.execute("SELECT * FROM users WHERE username = ?", (new_username,)).fetchone() is not None:
+        cursor.execute("SELECT * FROM users WHERE username = %s", (new_username,))
+        if cursor.fetchone() is not None:
             flash("Username already exists.")
             return redirect("/edit_profile")
         else:
             cursor.execute('''
-                UPDATE users SET username =? WHERE id = ?''', (new_username, session["user_id"]))
+                UPDATE users SET username =%s WHERE id = %s''', (new_username, session["user_id"]))
             con.commit()
             cursor.close()
             con.close()
@@ -333,10 +349,10 @@ def change_username():
 @login_required
 def delete_account():
     if request.method == 'POST':
-        con = sqlite3.connect('explore_ease.db')
+        con = get_db_connection()
         cursor = con.cursor()
 
-        cursor.execute("SELECT * FROM users WHERE username = ?", (session["username"],))
+        cursor.execute("SELECT * FROM users WHERE username = %s", (session["username"],))
         rows = cursor.fetchall()
 
         # Ensure current password entered is correct
@@ -345,11 +361,11 @@ def delete_account():
             return redirect("/edit_profile")
         
         cursor.execute('''
-            DELETE FROM users WHERE id = ?''', (session["user_id"],))
+            DELETE FROM users WHERE id = %s''', (session["user_id"],))
         cursor.execute('''
-            DELETE FROM user_input WHERE user_id = ?''', (session["user_id"],))
+            DELETE FROM user_input WHERE user_id = %s''', (session["user_id"],))
         cursor.execute('''
-            DELETE FROM saved_plans WHERE user_id = ?''', (session["user_id"],))
+            DELETE FROM saved_plans WHERE user_id = %s''', (session["user_id"],))
         con.commit()
         cursor.close()
         con.close()
@@ -359,16 +375,16 @@ def delete_account():
 
 # Generate itinerary based on the user input found in the table user_input using openAI through groq API.
 def generate_itinerary():
-    con = sqlite3.connect('explore_ease.db')
+    con = get_db_connection()
     cursor = con.cursor()
 
     # Retrieve user input from the database
-    cursor.execute("SELECT * FROM user_input WHERE user_id = ?", (session["user_id"],))
+    cursor.execute("SELECT * FROM user_input WHERE user_id = %s", (session["user_id"],))
     user_input = cursor.fetchone()
 
     os.environ["OPENAI_API_BASE"] = "https://api.groq.com/openai/v1"
     os.environ["OPENAI_MODEL_NAME"] = "llama3-70b-8192"
-    os.environ["OPENAI_API_KEY"] = os.environ.get('key')
+    os.environ["OPENAI_API_KEY"] = os.getenv('API_KEY')
 
     criteria = f"duration: {user_input[4]}, destination: {user_input[2]}, first month: {user_input[6]}, budget: {user_input[3]}, pace: {user_input[5]}, interests: {user_input[7]}, dietary restrictions: {user_input[8]}"
 
@@ -389,7 +405,7 @@ def generate_itinerary():
     crew = Crew(
         agents = [generator],
         tasks = [generate_itinerary],
-        verbose = 2,
+        verbose = True,
         process = Process.sequential
     )
 
@@ -398,9 +414,9 @@ def generate_itinerary():
     cursor.close()
     con.close()
 
-    global generated_itinerary
-    generated_itinerary = itinerary.replace("*","")
+    generated_itinerary = itinerary
     return generated_itinerary
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = os.environ.get('PORT', 5000)
+    app.run(port=port)
