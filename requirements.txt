@@ -4,3 +4,4 @@ flask
 flask_session
 python-dotenv
 crewai
+mysql-connector-python
