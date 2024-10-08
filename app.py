@@ -393,7 +393,7 @@ def generate_itinerary():
         process = Process.sequential
     )
 
-    itinerary = crew.kickoff().raw
+    itinerary = crew.kickoff().pydantic
 
     cursor.close()
     con.close()
