@@ -413,6 +413,7 @@ def generate_itinerary():
     cursor.close()
     con.close()
 
+    global generated_itinerary 
     generated_itinerary = itinerary
     return generated_itinerary
 
