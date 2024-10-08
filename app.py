@@ -393,7 +393,7 @@ def generate_itinerary():
         process = Process.sequential
     )
 
-    itinerary = crew.kickoff()
+    itinerary = crew.kickoff().raw
 
     cursor.close()
     con.close()
