@@ -393,13 +393,13 @@ def generate_itinerary():
         process = Process.sequential
     )
 
-    itinerary = crew.kickoff().pydantic
+    itinerary = crew.kickoff()
 
     cursor.close()
     con.close()
 
     global generated_itinerary
-    generated_itinerary = itinerary.replace("*","")
+    # generated_itinerary = itinerary.replace("*","")
     return generated_itinerary
 
 if __name__ == '__main__':
