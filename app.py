@@ -54,7 +54,7 @@ con.commit()
 cursor.close()
 con.close()
 
-generated_itinerary = ''
+generated_itinerary = 'placeholder'
 
 @app.after_request
 def after_request(response):
