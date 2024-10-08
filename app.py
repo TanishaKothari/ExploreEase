@@ -43,6 +43,8 @@ cursor.execute('''
 cursor.close()
 con.close()
 
+generated_itinerary = ''
+
 @app.after_request
 def after_request(response):
     """Ensure responses aren't cached"""
@@ -398,7 +400,7 @@ def generate_itinerary():
     cursor.close()
     con.close()
 
-    global generated_itinerary
+    # global generated_itinerary
     generated_itinerary = itinerary
     return generated_itinerary
 
