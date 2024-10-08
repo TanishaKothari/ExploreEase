@@ -389,7 +389,7 @@ def generate_itinerary():
     crew = Crew(
         agents = [generator],
         tasks = [generate_itinerary],
-        verbose = 2,
+        verbose = True,
         process = Process.sequential
     )
 
