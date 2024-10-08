@@ -213,7 +213,7 @@ def save_plan():
     con = get_db_connection()
     cursor = con.cursor()
 
-    print(generated_itinerary)
+    print('saved plan=', generated_itinerary)
     
     cursor.execute('''
         INSERT INTO saved_plans (user_id, plan_details)
@@ -238,7 +238,7 @@ def saved_plans():
     cursor.close()
     con.close()
 
-    print(saved_plans)
+    print('saved_plans=', saved_plans)
 
     return render_template('saves.html', saved_plans=saved_plans)
 
