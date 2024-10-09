@@ -104,6 +104,13 @@
             } else {
                 // Prevent form submission if invalid
                 event.preventDefault();
+
+                // Find the first invalid element and scroll to it
+                var firstInvalid = form.querySelector(":invalid");
+                firstInvalid.scrollIntoView({ behavior: 'smooth' });
+                
+                // Ensure the custom validation message shows up
+                firstInvalid.reportValidity();
             }
         });
     </script>
