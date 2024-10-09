@@ -97,7 +97,14 @@
 
     <script>
         document.getElementById("Submit").addEventListener("click", function() {
-        document.getElementById("loading-spinner").style.display = "block";
+            var form = document.querySelector("form");
+            // Check if the form is valid
+            if (form.checkValidity()) {
+                document.getElementById("loading-spinner").style.display = "block";
+            } else {
+                // Prevent form submission if invalid
+                event.preventDefault();
+            }
         });
     </script>
 {% endblock %}
