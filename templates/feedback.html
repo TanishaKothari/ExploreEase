@@ -9,14 +9,14 @@
 {% endblock %}
 
 {% block main %}
-    <form action="/feedback" method="POST">
+    <form action="/feedback" method="POST" class="feedback-form">
         <div class="mb-3"><h3><label for="feedback">Feedback</label></h3></div>
         <div class="mb-3"><textarea placeholder="Enter your feedback here" class="form-control mx-auto w-auto" id="feedback" name="feedback" required></textarea></div>
         <div class="mb-3"><input type="submit" value="Submit Feedback"></div>
     </form><br>
 
     <!-- Show all stored feedbacks below the form -->
-    <div class="mb-3">
+    <div class="mb-3" id="other-feedbacks">
         <h3>Other Feedbacks</h3>
         {% for feedback in feedbacks %}
             {{ feedback[0] }}<br>
