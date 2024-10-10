@@ -22,22 +22,22 @@ Explore Ease is a web application designed to help users create personalized tra
 ## Installation
 1. Clone this repository: https://github.com/TanishaKothari/explore-ease.git
 2. Navigate to the project directory: `cd explore-ease`
-3. Install the required dependencies: `pip install flask werkzeug sqlite3 flask_session crewai`
+3. Install the required dependencies: `pip install flask werkzeug flask_session crewai`
 4. Run the application: `python app.py`
-5. The API key is stored in the .env file.
+5. The .env file stores the API key and database connection details.
 
 ## Usage
-1. Acess the web application by navigating to http://localhost:5000 in your browser.
+1. Acess the live web application at [ExploreEase](https://exploreease-4cf23960f067.herokuapp.com/).
 2. Register an account by clicking the "Register" link and providing a valid username and password.
 3. Log in to your account using the details provided during the registration.
 4. Fill out the travel preferences form to generate a personalized travel itinerary.
 5. Generate a new itinerary with the same inputs using the "Regenerate" button, save the generated itinerary using the "Save Plan" button, or provide feedback on the generated itinerary by clicking the "Give feedback" button and filling out the feedback form.
-6. View all saved itineraries in the "Saved Itineraris" section. Unsave itineraries by clicking the "Delete" button.
+6. View all saved itineraries in the "Saved Itineraries" section. Unsave itineraries by clicking the "Delete" button.
 7. Edit your profile or delete account by clicking on your username and selecting "Edit Profile".
 8. Logout by clicking on your username and selecting "Logout".
 
 ## Database Structure
-The application uses a SQLite database named `explore_ease.db` to store user information and user input. The database contains the following tables:
+The application uses a MySQL database to store user information and user input. The database contains the following tables:
 - users: Stores user information such as the user's ID, username and hashed password.
 - user_input: Stores user input entered in the itinerary generation form until the user logs out.
 - saved_plans: Stores saved itineraries with user ID and plan ID.
