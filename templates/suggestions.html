@@ -14,7 +14,7 @@
             <h4 class="card-title">Generated Plan</h4>
         </div>
         <div class="card-body">
-            <p style="white-space: pre-line" class="card-text">{{ generated_plan }}</p>
+            <p style="white-space: pre-line" class="card-text">{{ generated_plan | safe }}</p>
         </div>
         <div class="card-footer d-flex justify-content-between">
             <form method="post" action="/regenerate">

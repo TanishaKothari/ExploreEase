@@ -410,11 +410,12 @@ def generate_itinerary():
     )
 
     itinerary = crew.kickoff()
+    itinerary = itinerary.raw
 
     cursor.close()
     con.close()
 
-    generated_itinerary = itinerary
+    generated_itinerary = itinerary.replace('*', '')
     return generated_itinerary
 
 if __name__ == '__main__':
