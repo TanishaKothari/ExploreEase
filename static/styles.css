@@ -42,11 +42,14 @@ body.edit_profile-page {
     margin-top: 10rem;
 }
 
-
 .register_form {
     margin-top: 9rem;
+    background-color: rgba(121, 85, 99, 0.35);
 }
 
+.register_form h1 {
+    color: rgb(180, 148, 255);
+}
 
 .form-container {
     display: grid;
@@ -140,6 +143,20 @@ body.edit_profile-page {
 
     nav .nav-link.dropdown-toggle, .dropdown-item {
         font-size: 25px;
+    }
+
+    .register_form {
+        margin-top: 9rem;
+        margin-left: 3rem;
+    }
+
+    .register_form h1 {
+        color: rgb(125, 80, 229);
+    }
+
+    .login_form {
+        margin-top: 8rem;
+        margin-left: 3rem;
     }
 
     .form-container {

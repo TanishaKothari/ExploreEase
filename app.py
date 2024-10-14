@@ -77,9 +77,6 @@ def login():
     con = get_db_connection()
     cursor = con.cursor()
 
-    # Forget any user_id
-    session.clear()
-
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
         # Query database for username
@@ -91,7 +88,7 @@ def login():
 
         # Ensure username exists and password is correct
         if len(rows) != 1 or not check_password_hash(rows[0][2], request.form.get("password")):
-            flash("Invalid username and/or password.")
+            flash("Invalid username and/or password")
             return redirect("/login")
         
         # Remember which user has logged in
@@ -361,14 +358,20 @@ def delete_account():
             return redirect("/edit_profile")
         
         cursor.execute('''
-            DELETE FROM users WHERE id = %s''', (session["user_id"],))
-        cursor.execute('''
             DELETE FROM user_input WHERE user_id = %s''', (session["user_id"],))
         cursor.execute('''
             DELETE FROM saved_plans WHERE user_id = %s''', (session["user_id"],))
+        cursor.execute('''
+            DELETE FROM feedback WHERE user_id = %s''', (session["user_id"],))
+        cursor.execute('''
+            DELETE FROM users WHERE id = %s''', (session["user_id"],))
         con.commit()
         cursor.close()
         con.close()
+
+        # Forget user_id
+        session.clear()
+
         flash("Account deleted successfully!")
         return redirect("/register")
     return render_template('edit_profile.html')

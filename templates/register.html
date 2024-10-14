@@ -22,8 +22,8 @@
         }
     </style>
     
-    <div class="register_form" style="background-color: rgba(121, 85, 99, 0.35);">
-        <h1 style="color: rgb(180, 148, 255);">Register</h1><br>
+    <div class="register_form">
+        <h1>Register</h1><br>
         <form action="/register" method="POST">
             <div class="mb-3">
                 <input type="text" placeholder="Username" autocomplete="off" autofocus class="form-control mx-auto w-auto" id="username" name="username" required>
@@ -37,7 +37,7 @@
                 <input type="password" placeholder="Confirm Password" class="form-control mx-auto w-auto" id="confirmation" name="confirmation" required>
             </div>
 
-            <button type="submit">Register</button>
+            <button type="submit" class="btn btn-outline-info" style="width: 120px; border-radius: 10px; border-width: 2px;"><b>Register</b></button>
         </form>
     </div>
 {% endblock %}
