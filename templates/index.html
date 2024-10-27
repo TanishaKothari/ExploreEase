@@ -9,100 +9,161 @@
 {% endblock %}
 
 {% block main %}
-    <h1><span style="font-family: Antipasto, sans-serif">Details for Itinerary Generation</span></h1><br>
-    <span style="font-family: Ubuntu-sans, monospace">
-        <form class="form-container" action="/suggestions" method="post">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, sans-serif;
+        }
 
-            <label for="destination">Destination</label>
-            <input type="text" id="destination" name="destination">
-            <br>
-            <label for="budget">Budget (in USD)</label>
-            <input type="number" id="budget" name="budget" min="25"
-                oninvalid="alert('Please enter a higher budget (min 25 USD)')">
-            <br>
-            <label for="duration">Duration of Trip (days)</label>
-            <input type="number" id="duration" name="duration">
-            <br>
-            <label for="pace">Pace of Trip</label>
-            <select id="pace" name="pace">
-                <option value="">-- Please choose an option --</option>
-                <option value="busy">Busy</option>
-                <option value="relaxed">Relaxed</option>
-            </select>
-            <br>
-            <label for="months">First month of visit</label>
-            <select id="months" name="months">
-                <option value="">-- Please choose a month --</option>
-                <option value="January">January</option>
-                <option value="February">February</option>
-                <option value="March">March</option>
-                <option value="April">April</option>
-                <option value="May">May</option>
-                <option value="June">June</option>
-                <option value="July">July</option>
-                <option value="August">August</option>
-                <option value="September">September</option>
-                <option value="October">October</option>
-                <option value="November">November</option>
-                <option value="December">December</option>
-            </select>
-            <br>
+        body {
+            background: linear-gradient(135deg, #e9f0ff 0%, #f6f7ff 100%);
+            min-height: 100vh;
+            color: #2d3748;
+        }
+    </style>
 
-            <label for="interests"><b>Choose your Interests</b></label>
-            <fieldset id="interests" name="interests">
-                <input type="checkbox" id="adventure_sports" name="interests" value="adventure_sports">
-                <label for="adventure_sports">Adventure Sports</label><br>
-                <input type="checkbox" id="cultural_experiences" name="interests" value="cultural_experiences">
-                <label for="cultural_experiences">Cultural Experiences</label><br>
-                <input type="checkbox" id="nature_and_wildlife" name="interests" value="nature_and_wildlife">
-                <label for="nature_and_wildlife">Nature and Wildlife</label><br>
-                <input type="checkbox" id="culinary_tours" name="interests" value="culinary_tours">
-                <label for="culinary_tours">Culinary Tours</label><br>
-                <input type="checkbox" id="relaxation_and_wellness" name="interests" value="relaxation_and_wellness">
-                <label for="relaxation_and_wellness">Relaxation and Wellness</label><br>
-                <input type="checkbox" id="shopping" name="interests" value="shopping">
-                <label for="shopping">Shopping</label><br>
-                <input type="checkbox" id="nightlife_and_entertainment" name="interests" value="nightlife_and_entertainment">
-                <label for="nightlife_and_entertainment">Nightlife/Entertainment</label><br>
-                <input type="checkbox" id="photography" name="interests" value="photography">
-                <label for="photography">Photography</label><br>
-            </fieldset>
 
-            <label for="diet"><b>Select Diet Preferences/Restrictions</b></label>
-            <fieldset id="dietary_restrictions" name="dietary_restrictions">
-                <input type="checkbox" id="vegetarian" name="dietary_restrictions" value="vegetarian">
-                <label for="veg">Vegetarian</label><br>
-                <input type="checkbox" id="vegan" name="dietary_restrictions" value="vegan">
-                <label for="vegan">Vegan</label><br>
-                <input type="checkbox" id="halal" name="dietary_restrictions" value="halal">
-                <label for="halal">Halal</label><br>
-                <input type="checkbox" id="kosher" name="dietary_restrictions" value="kosher">
-                <label for="kosher">Kosher</label><br>
-                <input type="checkbox" id="glutenfree" name="dietary_restrictions" value="glutenfree">
-                <label for="glutenfree">Gluten Free</label><br>
-                <input type="checkbox" id="dairyfree" name="dietary_restrictions" value="dairyfree">
-                <label for="dairyfree">Dairy Free</label><br>
-                <input type="checkbox" id="nutfree" name="dietary_restrictions" value="nutfree">
-                <label for="nutfree">Nut Free</label><br>
-            </fieldset>
-            <br>
+    <div class="input-form-container">
 
-            <button type="submit" class="btn btn-primary" id="Submit">Get Recommendations</button>
-            <div id="loading-spinner" class="loading-spinner">
-                <div class="spinner"></div>
+        <div class="input-form-header">
+            <h1>Plan Your Perfect Trip</h1>
+            <p>Tell us your preferences and let us create your dream itinerary</p>
+        </div>
+
+        <form action="/suggestions" method="post" autocomplete="off">
+
+            <div class="input-form-section">
+                <h2 class="section-title">Basic Details</h2>
+                <div class="input-form-grid">
+                    <div class="input-form-group">
+                        <label for="destination">Destination</label>
+                        <input type="text" id="destination" name="destination" class="input-form-control" placeholder="Where would you like to go?" autofocus>
+                    </div>
+                    <div class="input-form-group">
+                        <label for="budget">Budget (USD)</label>
+                        <input type="number" id="budget" name="budget" class="input-form-control" min="25" placeholder="Min. $25">
+                    </div>
+                    <div class="input-form-group">
+                        <label for="duration">Duration (days)</label>
+                        <input type="number" id="duration" name="duration" class="input-form-control" min="1" placeholder="How many days?">
+                    </div>
+                    <div class="input-form-group">
+                        <label for="months">When are you planning to visit?</label>
+                        <select id="months" name="months" class="input-form-control">
+                            <option value="">Select month</option>
+                            <option value="January">January</option>
+                            <option value="February">February</option>
+                            <option value="March">March</option>
+                            <option value="April">April</option>
+                            <option value="May">May</option>
+                            <option value="June">June</option>
+                            <option value="July">July</option>
+                            <option value="August">August</option>
+                            <option value="September">September</option>
+                            <option value="October">October</option>
+                            <option value="November">November</option>
+                            <option value="December">December</option>
+                        </select>
+                    </div>
+                    <div class="input-form-group">
+                        <label for="pace">What's your preferred pace?</label>
+                        <select id="pace" name="pace" class="input-form-control">
+                            <option value="">Choose your pace</option>
+                            <option value="busy">Busy - Pack in the activities!</option>
+                            <option value="relaxed">Relaxed - Take it easy</option>
+                        </select>
+                    </div>
+                </div>
             </div>
+
+            <div class="input-form-section">
+                <h2 class="section-title">Travel Interests</h2>
+                <div class="checkbox-grid">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="adventure_sports" name="interests" value="adventure_sports">
+                        <label for="adventure_sports">Adventure Sports</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="cultural_experiences" name="interests" value="cultural_experiences">
+                        <label for="cultural_experiences">Cultural Experiences</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="nature_and_wildlife" name="interests" value="nature_and_wildlife">
+                        <label for="nature_and_wildlife">Nature & Wildlife</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="culinary_tours" name="interests" value="culinary_tours">
+                        <label for="culinary_tours">Culinary Tours</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="relaxation_and_wellness" name="interests" value="relaxation_and_wellness">
+                        <label for="relaxation_and_wellness">Relaxation & Wellness</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="shopping" name="interests" value="shopping">
+                        <label for="shopping">Shopping</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="nightlife_and_entertainment" name="interests" value="nightlife_and_entertainment">
+                        <label for="nightlife_and_entertainment">Nightlife & Entertainment</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="photography" name="interests" value="photography">
+                        <label for="photography">Photography</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-form-section">
+                <h2 class="section-title">Dietary Preferences</h2>
+                <div class="checkbox-grid">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="vegetarian" name="dietary_restrictions" value="vegetarian">
+                        <label for="vegetarian">Vegetarian</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="vegan" name="dietary_restrictions" value="vegan">
+                        <label for="vegan">Vegan</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="halal" name="dietary_restrictions" value="halal">
+                        <label for="halal">Halal</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="kosher" name="dietary_restrictions" value="kosher">
+                        <label for="kosher">Kosher</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="glutenfree" name="dietary_restrictions" value="glutenfree">
+                        <label for="glutenfree">Gluten Free</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="dairyfree" name="dietary_restrictions" value="dairyfree">
+                        <label for="dairyfree">Dairy Free</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="nutfree" name="dietary_restrictions" value="nutfree">
+                        <label for="nutfree">Nut Free</label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="input-submit-btn">Create My Itinerary</button>
         </form>
-    </span>
+    </div>
+
+    <div id="loading-spinner" class="loading-spinner">
+        <div class="spinner"></div>
+    </div>
 
     <script>
-        document.getElementById("Submit").addEventListener("click", function() {
-            var form = document.querySelector("form");
-            // Check if the form is valid
-            if (form.checkValidity()) {
-                document.getElementById("loading-spinner").style.display = "block";
+        document.querySelector('form').addEventListener('submit', function(event) {
+            if (this.checkValidity()) {
+                document.querySelector('.loading-spinner').style.display = 'flex';
             } else {
-                // Prevent form submission if invalid
-                event.preventDefault();
+                event.preventDefault()
             }
         });
     </script>
