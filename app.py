@@ -207,6 +207,9 @@ def regenerate():
 @app.route("/save_plan", methods=['POST'])
 @login_required
 def save_plan():
+    # Retrieve the plan details from the form
+    generated_itinerary = request.form.get('plan_details')
+
     # Store the plan in the database
     con = get_db_connection()
     cursor = con.cursor()

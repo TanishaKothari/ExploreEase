@@ -10,25 +10,38 @@
 
 {% block main %}
     <style>
-        .padding{
-            padding-bottom: 20px;
-            padding-top: 10px;
-            background-color: #fbeeff;
-            background-clip: padding-box;
+        h1 {
+            text-align: center;
+            color: #4A90E2;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            font-weight: 700;
         }
     </style>
 
-    <h1>Saved Itineraries</h1>
-    <div id="saved-plans">
-        {% for plan in saved_plans %}
-            <div style="background-color: {{ ["#FFCCCC", "#E9F1FA", "#effaf6", "#B6E1E7", "#DDD0C8", "#CCFFCC", "#CCCCFF", "#FFFFCC"]|random }}">
-            <h2>PLAN {{ loop.index }}</h2>
-            <form method="post" action="/delete_saved_plans">
-                <button type="submit" class="btn btn-danger">Delete Plan</button>
-                <input type="hidden" name="plan_id" value="{{ plan[0] }}">
-            </form>
-            <p style="white-space: pre-wrap">{{ plan[1] }}</p>
-            <div class="padding"></div>
-        {% endfor %}
+    <div class="plans-container">
+        <h1>Saved Itineraries</h1>
+        <div class="saved-plans">
+            {% if saved_plans %}
+                {% for plan in saved_plans %}
+                    <div class="plan-card">
+                        <div class="plan-header">
+                            <h2 class="plan-title">Plan {{ loop.index }}</h2>
+                            <form method="post" action="/delete_saved_plans" style="margin: 0;">
+                                <button type="submit" class="delete-plan-btn">Delete Plan</button>
+                                <input type="hidden" name="plan_id" value="{{ plan[0] }}">
+                            </form>
+                        </div>
+                        <div class="plan-content">
+                            {{ plan[1] }}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <p>You have no saved plans yet. Start planning your next adventure!</p>
+                </div>
+            {% endif %}
+        </div>
     </div>
 {% endblock %}

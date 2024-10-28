@@ -204,6 +204,13 @@ body.edit_profile-page {
     background-color: #f0f7ff;
 }
 
+body.saves-page {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.6;
+    color: #2C3E50;
+    background-color: #F5F7FA;
+}
+
 
 /* Register form */
 .register-form-container {
@@ -573,6 +580,82 @@ body.edit_profile-page {
 }
 
 
+/* Saved itineraries page */
+.plans-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.saved-plans {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 1rem;
+}
+
+.plan-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+    overflow: hidden;
+}
+
+.plan-card:hover {
+    transform: translateY(-5px);
+}
+
+.plan-header {
+    padding: 1.5rem;
+    background: #4A90E2;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.plan-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.plan-content {
+    padding: 1.5rem;
+    white-space: pre-line;
+}
+
+.delete-plan-btn {
+    background-color: #E74C3C;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: background-color 0.2s ease;
+}
+
+.delete-plan-btn:hover {
+    background-color: #c0392b;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.empty-state p {
+    font-size: 1.25rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+
 /* Feedback page */
 .feedback-form-container {
     max-width: 800px;
@@ -733,6 +816,10 @@ body.edit_profile-page {
 
     .card {
         width: 27.813rem;
+    }
+
+    .saved-plans {
+        grid-template-columns: 1fr;
     }
 
     .feedback-section, .feedback-list {
