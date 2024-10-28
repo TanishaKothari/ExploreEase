@@ -87,7 +87,7 @@
 
     {% if get_flashed_messages() %}
         <header>
-            <div class="alert alert-primary mb-0 text-center" role="alert">
+            <div id="flash-message" class="alert alert-primary mb-0 text-center" role="alert">
                 {{ get_flashed_messages() | join(" ") }}
             </div>
         </header>
@@ -98,81 +98,52 @@
     </main>
 
     <script>
-        window.addEventListener('load', function() {
-            var navItems = document.querySelectorAll('.nav-item');
-            var currentUrl = window.location.href;
-    
-            navItems.forEach(function(item) {
-                var link = item.querySelector('a');
-                if (link.href === currentUrl) {
-                    item.classList.add('active');
-                }
-            });
-    
-            // Check active state
-            window.addEventListener('click', function(event) {
-                var clickedLink = event.target.closest('a');
-                if (clickedLink && clickedLink.href !== currentUrl) {
-                    navItems.forEach(function(item) {
-                        item.classList.remove('active');
-                    });
-                }
-            });
-        });
-
         document.addEventListener('DOMContentLoaded', function () {
             var navbarCollapse = document.getElementById('navbar');
             var navbarToggler = document.querySelector('.navbar-toggler');
 
-            // Handle dropdowns separately from regular nav links
-            var dropdowns = navbarCollapse.querySelectorAll('.dropdown-toggle');
-            dropdowns.forEach(function (dropdown) {
-                dropdown.addEventListener('click', function (event) {
-                    event.stopPropagation(); // Prevent navbar collapse from closing
-                    var parentDropdown = this.parentElement;
-
-                    // Toggle the dropdown menu manually
-                    if (parentDropdown.classList.contains('show')) {
-                        parentDropdown.classList.remove('show');
-                        parentDropdown.querySelector('.dropdown-menu').classList.remove('show');
-                    } else {
-                        // Close any open dropdowns
-                        var openDropdowns = navbarCollapse.querySelectorAll('.dropdown.show');
-                        openDropdowns.forEach(function (openDropdown) {
-                            openDropdown.classList.remove('show');
-                            openDropdown.querySelector('.dropdown-menu').classList.remove('show');
-                        });
-
-                        // Open the clicked dropdown
-                        parentDropdown.classList.add('show');
-                        parentDropdown.querySelector('.dropdown-menu').classList.add('show');
-                    }
+            // Initialize Bootstrap dropdowns
+            var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
+            var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+                return new bootstrap.Dropdown(dropdownToggleEl, {
+                    autoClose: true,
+                    display: 'static'
                 });
             });
 
-            // Handle closing the dropdown when clicking outside
-            document.addEventListener('click', function (event) {
-                if (!navbarCollapse.contains(event.target)) {
-                    var openDropdowns = navbarCollapse.querySelectorAll('.dropdown.show');
-                    openDropdowns.forEach(function (openDropdown) {
-                        openDropdown.classList.remove('show');
-                        openDropdown.querySelector('.dropdown-menu').classList.remove('show');
-                    });
-                }
-            });
-
-            // Handle regular nav links (not dropdowns) to close the navbar when clicked
+            // Handle regular nav links for mobile menu
             var navLinks = navbarCollapse.querySelectorAll('.nav-link:not(.dropdown-toggle)');
             navLinks.forEach(function (link) {
                 link.addEventListener('click', function () {
-                    // Close the navbar when a regular link (non-dropdown) is clicked
                     if (navbarToggler && window.getComputedStyle(navbarToggler).display !== 'none') {
-                        new bootstrap.Collapse(navbarCollapse).hide(); // Close the navbar
+                        new bootstrap.Collapse(navbarCollapse).hide();
                     }
                 });
             });
+
+            // Active state handling
+            var navItems = document.querySelectorAll('.nav-item');
+            var currentUrl = window.location.href;
+
+            navItems.forEach(function(item) {
+                var link = item.querySelector('a');
+                if (link && link.href === currentUrl) {
+                    item.classList.add('active');
+                }
+            });
         });
 
+
+        // Hide the flash message after 5 seconds (5000 milliseconds)
+        setTimeout(function() {
+            var flashMessage = document.getElementById('flash-message');
+            if (flashMessage) {
+                flashMessage.classList.add('fade-out');
+                setTimeout(function() {
+                    flashMessage.style.display = 'none';
+                }, 1000); // Match the duration of the CSS transition
+            }
+        }, 3000);
     </script>
 </body>
 </html>

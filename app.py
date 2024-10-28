@@ -56,6 +56,7 @@ con.close()
 
 generated_itinerary = ''
 
+
 @app.after_request
 def after_request(response):
     """Ensure responses aren't cached"""
@@ -377,6 +378,7 @@ def delete_account():
         return redirect("/register")
     return render_template('edit_profile.html')
 
+
 # Generate itinerary based on the user input found in the table user_input using openAI through groq API.
 def generate_itinerary():
     con = get_db_connection()
@@ -421,6 +423,7 @@ def generate_itinerary():
 
     generated_itinerary = itinerary.replace('*', '')
     return generated_itinerary
+
 
 if __name__ == '__main__':
     port = os.environ.get('PORT', 5000)

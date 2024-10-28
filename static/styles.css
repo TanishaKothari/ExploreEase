@@ -732,6 +732,20 @@ body.saves-page {
 }
 
 
+/* Flash Message Styles */
+.fade-out {
+    opacity: 0;
+    transition: opacity 1s ease-out;
+}
+#flash-message {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000; /* Ensure it is above other content */
+}
+
+
 @media (max-width: 640px) {
 
     /* Navbar */
