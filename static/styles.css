@@ -1,24 +1,143 @@
-/* Size for brand */
-nav .navbar-brand {
-    font-size: xx-large;
+/* Enhanced Navbar Styles */
+.modern-navbar {
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.98), rgba(249, 250, 251, 0.98));
+    backdrop-filter: blur(10px);
+    box-shadow: 
+        0 4px 6px -1px rgba(0, 0, 0, 0.05),
+        0 2px 4px -1px rgba(0, 0, 0, 0.03),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    padding: 0.5rem 0;
+    border: none;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
-/* Colors for brand */
-nav .navbar-brand .blue {
-    color: #537fbe;
+/* Brand styling */
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    border-radius: 12px;
+    transition: transform 0.3s ease;
 }
 
-nav .navbar-brand .green {
-    color: #2e944b;
+.navbar-brand:hover {
+    transform: translateY(-1px);
 }
 
-/* Other navbar styles */
-.nav-item {
-    margin-top: -7px;
+.brand-text {
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    font-size: 1.5rem;
 }
 
-.nav-item.active > a {
-    background-color: #d4d4d4;
+.brand-text .blue {
+    background: linear-gradient(135deg, #4299e1, #2b6cb0);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: opacity 0.3s ease;
+}
+
+.brand-text .green {
+    background: linear-gradient(135deg, #48bb78, #2f855a);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: opacity 0.3s ease;
+}
+
+.navbar-brand:hover .blue,
+.navbar-brand:hover .green {
+    opacity: 0.9;
+}
+
+/* Navigation links */
+.nav-link {
+    color: #4a5568;
+    padding: 0.625rem 1.25rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+    margin: 0 0.25rem;
+}
+
+.nav-link:hover {
+    color: #2d3748;
+    background: linear-gradient(to bottom, rgba(237, 242, 247, 0.5), rgba(237, 242, 247, 0.8));
+    transform: translateY(-1px);
+}
+
+.active {
+    color: rgba(0, 0, 0, 1);
+}
+
+/* Dropdown styling */
+.dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.dropdown-toggle::after {
+    transition: transform 0.3s ease;
+}
+
+.show .dropdown-toggle::after {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: 16px;
+    box-shadow: 
+        0 10px 25px rgba(0, 0, 0, 0.1),
+        0 4px 10px rgba(0, 0, 0, 0.05);
+    padding: 0.75rem;
+    min-width: 12rem;
+    transform-origin: top right;
+    animation: dropdownFade 0.2s ease;
+}
+
+@keyframes dropdownFade {
+    from {
+        opacity: 0;
+        transform: scale(0.98) translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.dropdown-item {
+    color: #4a5568;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+    color: #2d3748;
+    background: linear-gradient(to right, rgba(237, 242, 247, 0.5), rgba(237, 242, 247, 0.8));
+    transform: translateX(4px);
+}
+
+.dropdown-item.danger {
+    color: #e53e3e;
+}
+
+.dropdown-item.danger:hover {
+    background: linear-gradient(to right, rgba(254, 242, 242, 0.8), rgba(254, 242, 242, 0.9));
+    color: #c53030;
 }
 
 
@@ -79,6 +198,10 @@ body.login-page::before {
 
 body.feedback-page {
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+body.edit_profile-page {
+    background-color: #f0f7ff;
 }
 
 
@@ -527,34 +650,61 @@ body.feedback-page {
 
 
 @media (max-width: 640px) {
-    #Navbar {
-        width: 30rem;
-        margin-left: -0.313rem;
-    }
 
-    #navbar .navbar-nav {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end; /* Aligns items to the right */
-        text-align: right; /* Ensures text is aligned to the right */
+    /* Navbar */
+    .modern-navbar {
+        padding: 0.75rem 1rem;
     }
-
+    
     .navbar-collapse {
-        justify-content: flex-end; /* Align the entire collapsible to the right */
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 20px;
+        margin-top: 1rem;
+        padding: 1rem;
+        box-shadow: 
+            0 10px 25px rgba(0, 0, 0, 0.1),
+            0 4px 10px rgba(0, 0, 0, 0.05);
+        animation: mobileMenuFade 0.3s ease;
+    }
+    
+    @keyframes mobileMenuFade {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .nav-link {
+        padding: 0.875rem 1.25rem;
+        margin: 0.25rem 0;
+    }
+    
+    .dropdown-menu {
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        padding: 0 0.5rem;
+    }
+    
+    .dropdown-item {
+        padding: 0.875rem 1.25rem;
+        margin: 0.25rem 0;
     }
 
     .navbar-toggler {
+        border: 1px solid rgba(0, 0, 0, 0.1);
         margin-top: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 10px;
+        background: linear-gradient(to bottom, rgba(237, 242, 247, 0.5), rgba(237, 242, 247, 0.8));
     }
 
-    .nav-item {
-        flex-direction: column;
-        align-items: flex-end;
-        font-size: 25px;
-    }
-
-    nav .nav-link.dropdown-toggle, .dropdown-item {
-        font-size: 25px;
+    .navbar-toggler:focus {
+        box-shadow: none;
     }
 
 

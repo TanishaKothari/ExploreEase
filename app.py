@@ -312,6 +312,7 @@ def change_password():
         cursor.close()
         con.close()
         flash("Password changed successfully!")
+        session.clear()
         return redirect("/login")
     return render_template('edit_profile.html')
 
@@ -332,12 +333,13 @@ def change_username():
             return redirect("/edit_profile")
         else:
             cursor.execute('''
-                UPDATE users SET username =%s WHERE id = %s''', (new_username, session["user_id"]))
+                UPDATE users SET username = %s WHERE id = %s''', (new_username, session["user_id"]))
             con.commit()
             cursor.close()
             con.close()
+            session["username"] = new_username
             flash("Username changed successfully!")
-            return redirect("/login")
+            return redirect("/")
     return render_template('edit_profile.html')
 
 

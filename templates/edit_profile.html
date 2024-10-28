@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Change Account Details
+    Account Management
 {% endblock %}
 
 {% block body_class %}
@@ -9,58 +9,177 @@
 {% endblock %}
 
 {% block main %}
-    <h1><span style="font-family: Montserrat">Change Account Details</span></h1>
-    <!-- Give options to change username and password -->
-    <!-- If user clicks "Change username" ask for new username -->
-    <!-- If user clicks "Change password" ask for current password, new password, confirm new password -->
-
-    <!-- Create links for Change Username and Change Password which will then display the correct form -->
-    <button id="change_username" value="change_username" onClick="">Change Username</button>
-    <button id="change_password" value="change_password" onClick="">Change Password</button>
-    <button style="background-color:red" id="delete_account" value="delete_account" onClick="">Delete Account</button><br><br>
-
-    <!-- Show the form for new username -->
-    <form id="username_form" style="display:none" action="/change_username" method="post">
-        <input type="text" placeholder="New Username" name="new_username" required>
-        <button type="submit">Change Username</button>
-    </form><br>
-
-    <!-- Show the form for current, new password and confirm password -->
-    <form id="password_form" style="display:none" action="/change_password" method="post">
-        <input type="text" placeholder="Current Password" autocomplete="off" name="current_password" required>
-        <input type="text" placeholder="New Password" autocomplete="off" name="new_password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" 
-        oninvalid="this.setCustomValidity('Password must be at least 8 characters and contain at least one uppercase, lowercase, and digit')"
-        oninput="this.setCustomValidity('')">
-        <input type="text" placeholder="Confirm New Password" autocomplete="off" name="confirm_password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" 
-        oninvalid="this.setCustomValidity('Password must be at least 8 characters and contain at least one uppercase, lowercase, and digit')"
-        oninput="this.setCustomValidity('')">
-        <button type="submit">Change Password</button>
-    </form>
-
-    <!-- Confirm account deletion with current password -->
-    <form id="delete_account_form" style="display:none" action="/delete_account" method="post">
-        <input type="password" placeholder="Current Password" autocomplete="off" name="current_password" required>
-        <button style="background-color:red" type="submit">Delete Account</button>
-    </form>
-
-    <script type="text/javascript">
-        var changeUsernameButton = document.getElementById("change_username");
-        var changePasswordButton = document.getElementById("change_password");
-        var deleteAccountButton = document.getElementById("delete_account");
-        changeUsernameButton.onclick = function(){
-            document.getElementById("username_form").style.display ="inline";
-            document.getElementById("password_form").style.display="none";
-            document.getElementById("delete_account_form").style.display="none";
+    <style>
+        * {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        changePasswordButton.onclick = function(){
-            document.getElementById("username_form").style.display ="none";
-            document.getElementById("password_form").style.display="inline";
-            document.getElementById("delete_account_form").style.display="none";
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            margin-top: 2rem;
         }
-        deleteAccountButton.onclick = function(){
-            document.getElementById("username_form").style.display ="none";
-            document.getElementById("password_form").style.display="none";
-            document.getElementById("delete_account_form").style.display="inline";
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
         }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 140px;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        form {
+            display: none;
+            flex-direction: column;
+            gap: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        form.visible {
+            display: flex;
+            opacity: 1;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        input {
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .submit-btn {
+            margin-top: 1rem;
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .submit-btn:hover {
+            background-color: #27ae60;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.5rem;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+
+    <div class="container">
+        <h1>Account Management</h1>
+        
+        <div class="button-group">
+            <button class="btn-primary" id="change_username">Change Username</button>
+            <button class="btn-primary" id="change_password">Change Password</button>
+            <button class="btn-danger" id="delete_account">Delete Account</button>
+        </div>
+
+        <form id="username_form" action="/change_username" method="post">
+            <div class="input-group">
+                <input type="text" placeholder="New Username" name="new_username" required>
+            </div>
+            <button type="submit" class="submit-btn">Update Username</button>
+        </form>
+
+        <form id="password_form" action="/change_password" method="post">
+            <div class="input-group">
+                <input type="password" placeholder="Current Password" name="current_password" required>
+            </div>
+            <div class="input-group">
+                <input type="password" placeholder="New Password" name="new_password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}">
+            </div>
+            <div class="input-group">
+                <input type="password" placeholder="Confirm New Password" name="confirm_password" required>
+            </div>
+            <button type="submit" class="submit-btn">Update Password</button>
+        </form>
+
+        <form id="delete_account_form" action="/delete_account" method="post">
+            <div class="input-group">
+                <input type="password" placeholder="Current Password" name="current_password" required>
+            </div>
+            <button type="submit" class="btn-danger">Permanently Delete Account</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const forms = {
+                username: document.getElementById('username_form'),
+                password: document.getElementById('password_form'),
+                delete: document.getElementById('delete_account_form')
+            };
+
+            const buttons = {
+                username: document.getElementById('change_username'),
+                password: document.getElementById('change_password'),
+                delete: document.getElementById('delete_account')
+            };
+
+            function showForm(formKey) {
+                Object.values(forms).forEach(form => form.classList.remove('visible'));
+                forms[formKey].classList.add('visible');
+            }
+
+            Object.entries(buttons).forEach(([key, button]) => {
+                button.addEventListener('click', () => showForm(key));
+            });
+        });
     </script>
 {% endblock %}
