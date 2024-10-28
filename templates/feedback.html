@@ -9,17 +9,58 @@
 {% endblock %}
 
 {% block main %}
-    <form action="/feedback" method="POST" class="feedback-form">
-        <div class="mb-3"><h3><label for="feedback">Feedback</label></h3></div>
-        <div class="mb-3"><textarea placeholder="Enter your feedback here" class="form-control mx-auto w-auto" id="feedback" name="feedback" required></textarea></div>
-        <div class="mb-3"><input type="submit" value="Submit Feedback"></div>
-    </form><br>
+    <style>
+        * {
 
-    <!-- Show all stored feedbacks below the form -->
-    <div class="mb-3" id="other-feedbacks">
-        <h3>Other Feedbacks</h3>
-        {% for feedback in feedbacks %}
-            {{ feedback[0] }}<br>
-        {% endfor %}
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        h3 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            position: relative;
+            margin-left: -18px;
+            padding-bottom: 0.5rem;
+        }
+
+        h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 3px;
+            background: #3498db;
+            border-radius: 2px;
+        }
+    </style>
+
+    <div class="feedback-form-container">
+        <div class="feedback-section">
+            <form action="/feedback" method="POST" class="feedback-form">
+                <div class="mb-3">
+                    <h3><label for="feedback">Feedback</label></h3>
+                </div>
+                <div class="feedback-form-group">
+                    <textarea 
+                        class="feedback-form-control" 
+                        id="feedback" 
+                        name="feedback" 
+                        placeholder="Enter your feedback here" 
+                        required
+                    ></textarea>
+                </div>
+                <input type="submit" value="Submit Feedback" class="feedback-submit-btn">
+            </form>
+        </div>
+
+        <div class="feedback-list">
+            <h3>What Others Are Saying</h3>
+            {% for feedback in feedbacks %}
+                <div class="feedback-item">{{ feedback[0] }}</div>
+            {% endfor %}
+        </div>
     </div>
 {% endblock %}

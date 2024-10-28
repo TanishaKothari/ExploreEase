@@ -10,27 +10,37 @@
 
 {% block main %}
     <style>
-        body::before{
-            content: "";
-                background-image: url(https://travel.usnews.com/dims4/USNEWS/615d5f7/2147483647/resize/445x280%5E%3E/crop/445x280/quality/85/?url=https%3A%2F%2Ftravel.usnews.com%2Fimages%2FLingxiao_XieGetty_Images_u6g9f3F.jpg);
-                position: fixed;
-                inset: 0;
-                background-size: cover;
-                background-position: center;
-                background-repeat: no-repeat;
-                z-index: -10;
+        /* Decorative background elements */
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            top: -150px;
+            left: -150px;
+        }
+
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            bottom: 5px;
+            left: 1000px;
         }
     </style>
-    <div class="login_form" style="background-color: rgba(25, 39, 62, 0.35);">
-        <h1 style="color: aliceblue;">Log In</h1><br>
+
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+    </div>
+
+    <div class="login-form-container">
+        <h1 class="login-form-title">Welcome Back</h1>
         <form action="/login" method="post">
             <div class="mb-3">
-                <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="username" placeholder="Username" type="text" required>
+                <input autocomplete="off" autofocus class="login-form-control" name="username" placeholder="Username" type="text" required>
             </div>
             <div class="mb-3">
-                <input class="form-control mx-auto w-auto" name="password" placeholder="Password" type="password" required>
+                <input class="login-form-control" name="password" placeholder="Password" type="password" required>
             </div>
-            <button class="btn btn-primary" type="submit" style="width: 120px; border-radius: 7px;">Log In</button>
+            <button class="login-button" type="submit">Log In</button>
         </form>
     </div>
 {% endblock %}

@@ -12,6 +12,7 @@ nav .navbar-brand .green {
     color: #2e944b;
 }
 
+/* Other navbar styles */
 .nav-item {
     margin-top: -7px;
 }
@@ -20,6 +21,8 @@ nav .navbar-brand .green {
     background-color: #d4d4d4;
 }
 
+
+/* Body styles */
 body.suggestion-page {
     background-color: #ffeef8;
 }
@@ -28,29 +31,243 @@ body.saves-page {
     background-color: #fbeeff;
 }
 
-body.feedback-page {
-    background-color: #fafaeb;
-}
-
 body.edit_profile-page {
     background-color: #e7fbff;
 }
 
-
-.login_form {
-    margin-top: 10rem;
+body.register-page {
+    background: linear-gradient(135deg, #f6f8fb 0%, #e9eef5 100%);
+    background-attachment: fixed;
+    position: relative;
+    min-height: 100vh;
+    overflow-x: hidden;
 }
 
-.register_form {
-    margin-top: 9rem;
-    background-color: rgba(121, 85, 99, 0.35);
+body.register-page::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 15% 25%, rgba(102, 126, 234, 0.05) 0%, transparent 25%),
+        radial-gradient(circle at 85% 75%, rgba(118, 75, 162, 0.05) 0%, transparent 25%);
+    pointer-events: none;
 }
 
-.register_form h1 {
-    color: rgb(180, 148, 255);
+body.login-page {
+    background: linear-gradient(135deg, #f6f8fb 0%, #e9eef5 100%);
+    background-attachment: fixed;
+    position: relative;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+body.login-page::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 15% 25%, rgba(102, 126, 234, 0.05) 0%, transparent 25%),
+        radial-gradient(circle at 85% 75%, rgba(118, 75, 162, 0.05) 0%, transparent 25%);
+    pointer-events: none;
+}
+
+body.feedback-page {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
 
+/* Register form */
+.register-form-container {
+    max-width: 450px;
+    margin: 0.5rem auto 0 !important;
+    padding: 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.register-card {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    box-shadow: 
+        0 10px 25px -5px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(255, 255, 255, 0.7) inset;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.register-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem;
+    text-align: center;
+}
+
+.register-title {
+    color: white;
+    font-size: 2rem;
+    margin: 0;
+    font-weight: 600;
+}
+
+.register-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    margin-top: 0.5rem;
+    font-size: 1rem;
+}
+
+.register-form {
+    padding: 2rem;
+}
+
+.register-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.register-form-label {
+    display: block;
+    color: #4a5568;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.register-form-control {
+    background: rgba(247, 250, 252, 0.8);
+    border: 2px solid #edf2f7;
+    border-radius: 10px;
+    padding: 12px 16px;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.register-form-control:focus {
+    background: white;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.25);
+}
+
+.password-requirements {
+    font-size: 0.875rem;
+    color: #718096;
+    margin-top: 0.5rem;
+}
+
+.register-button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.register-button:hover {
+    transform: translateY(-1px);
+    background: linear-gradient(135deg, #764ba2, #667eea);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+}
+
+.register-button:active, .register-button:focus {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+
+/* Login form */
+.login-form-container {
+    max-width: 400px;
+    margin: 8rem auto 0;
+    padding: 2.5rem;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    box-shadow: 
+        0 4px 6px -1px rgba(0, 0, 0, 0.1), 
+        0 2px 4px -1px rgba(0, 0, 0, 0.06),
+        0 0 0 1px rgba(255, 255, 255, 0.7) inset;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+
+.login-form-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+.login-form-title {
+    color: #2d3748;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-weight: 600;
+}
+
+.login-form-control {
+    background: rgba(247, 250, 252, 0.8);
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px 20px;
+    margin-bottom: 1rem;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.login-form-control:focus {
+    background: white;
+    border-color: #4299e1;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.25);
+    outline: none;
+}
+
+.login-button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.login-button:hover {
+    transform: translateY(-1px);
+    background: linear-gradient(135deg, #764ba2, #667eea);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+}
+
+.login-button:active, .auth-button:focus {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+
+/* Decorative circles */
+.background-shapes {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.shape {
+    position: absolute;
+    border-radius: 50%;
+    background: linear-gradient(45deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+}
+
+
+/* Input form */
 .input-form-container {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
@@ -197,7 +414,7 @@ body.edit_profile-page {
     box-shadow: 0 4px 12px rgba(66, 153, 225, 0.25);
 }
 
-.input-submit-btn:active, .input-submit-btn:focus {background: linear-gradient(135deg, #4299e1, #2b6cb0);}
+.input-submit-btn:active, .input-submit-btn:focus { background: linear-gradient(135deg, #4299e1, #2b6cb0); }
 
 .loading-spinner {
     display: none;
@@ -233,6 +450,82 @@ body.edit_profile-page {
 }
 
 
+/* Feedback page */
+.feedback-form-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.feedback-section {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.feedback-form-group {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.feedback-form-control {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    outline: none;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: transparent;
+    min-height: 120px;
+    resize: vertical;
+}
+
+.feedback-form-control:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+}
+
+.feedback-submit-btn {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.feedback-submit-btn:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+}
+
+.feedback-list {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    padding: 2rem;
+}
+
+.feedback-item {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    transition: all 0.3s ease;
+}
+
+.feedback-item:last-child {
+    border-bottom: none;
+}
+
+.feedback-item:hover {
+    background: #f8f9fa;
+    transform: translateX(5px);
+}
+
+
 @media (max-width: 640px) {
     #Navbar {
         width: 30rem;
@@ -264,19 +557,25 @@ body.edit_profile-page {
         font-size: 25px;
     }
 
-    .register_form {
-        margin-top: 9rem;
-        margin-left: 3rem;
+
+    .register-form-container {
+        margin: 4rem 0 0 3rem !important;
     }
 
-    .register_form h1 {
-        color: rgb(125, 80, 229);
+    .register-header {
+        padding: 1.5rem;
     }
 
-    .login_form {
-        margin-top: 8rem;
-        margin-left: 3rem;
+    .register-form {
+        padding: 1.5rem;
     }
+    
+
+    .login-form-container {
+        margin: 5rem 0 0 3rem;
+        padding: 1.5rem;
+    }
+
 
     .input-form-grid {
         grid-template-columns: 1fr;
@@ -286,7 +585,7 @@ body.edit_profile-page {
         width: 27.813rem;
     }
 
-    .feedback-form, #other-feedbacks {
-        margin-left: 2.5rem;
+    .feedback-section, .feedback-list {
+        padding: 1rem;
     }
 }

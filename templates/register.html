@@ -10,34 +10,60 @@
 
 {% block main %}
     <style>
-        body::before{
-            content: "";
-                background-image: url(https://static.toiimg.com/thumb/msid-92089121,width-748,height-499,resizemode=4,imgsize-139308/.jpg);
-                position: fixed;
-                inset: 0;
-                background-size: cover;
-                background-position: center;
-                background-repeat: no-repeat;
-                z-index: -10;
+        /* Decorative background elements */
+        .shape-1 {
+            width: 400px;
+            height: 400px;
+            top: -250px;
+            left: 1000px;
+        }
+
+        .shape-2 {
+            width: 300px;
+            height: 300px;
+            bottom: -150px;
+            left: -150px;
         }
     </style>
-    
-    <div class="register_form">
-        <h1>Register</h1><br>
-        <form action="/register" method="POST">
-            <div class="mb-3">
-                <input type="text" placeholder="Username" autocomplete="off" autofocus class="form-control mx-auto w-auto" id="username" name="username" required>
-            </div>
-            <div class="mb-3">
-                <input type="password" placeholder="Password" class="form-control mx-auto w-auto" id="password" name="password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" 
-                    oninvalid="this.setCustomValidity('Password must be at least 8 characters and contain at least one uppercase, lowercase, and digit')"
-                    oninput="this.setCustomValidity('')">
-            </div>
-            <div class="mb-3">
-                <input type="password" placeholder="Confirm Password" class="form-control mx-auto w-auto" id="confirmation" name="confirmation" required>
-            </div>
 
-            <button type="submit" class="btn btn-outline-info" style="width: 120px; border-radius: 10px; border-width: 2px;"><b>Register</b></button>
-        </form>
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+    </div>
+
+    <div class="register-form-container">
+        <div class="register-card">
+            <div class="register-header">
+                <h1 class="register-title">Create Account</h1>
+                <p class="register-subtitle">Join our community today</p>
+            </div>
+            <div class="register-form">
+                <form action="/register" method="POST" id="registerForm">
+                    <div class="register-form-group">
+                        <label class="register-form-label" for="username">Username</label>
+                        <input type="text" autocomplete="off" autofocus class="register-form-control" id="username" name="username" required>
+                    </div>
+                    <div class="register-form-group">
+                        <label class="register-form-label" for="password">Password</label>
+                        <input type="password" class="register-form-control" id="password" name="password" required 
+                            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}">
+                        <div class="password-requirements">
+                            Password must contain at least:
+                            <ul class="mt-2">
+                                <li>8 characters</li>
+                                <li>One uppercase letter</li>
+                                <li>One lowercase letter</li>
+                                <li>One number</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="register-form-group">
+                        <label class="register-form-label" for="confirmation">Confirm Password</label>
+                        <input type="password" class="register-form-control" id="confirmation" name="confirmation" required>
+                    </div>
+                    <button type="submit" class="register-button">Create Account</button>
+                </form>
+            </div>
+        </div>
     </div>
 {% endblock %}
