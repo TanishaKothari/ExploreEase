@@ -55,12 +55,5 @@
                 <input type="submit" value="Submit Feedback" class="feedback-submit-btn">
             </form>
         </div>
-
-        <div class="feedback-list">
-            <h3>What Others Are Saying</h3>
-            {% for feedback in feedbacks %}
-                <div class="feedback-item">{{ feedback[0] }}</div>
-            {% endfor %}
-        </div>
     </div>
 {% endblock %}

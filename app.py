@@ -268,15 +268,11 @@ def feedback():
             VALUES (%s, %s)
         ''', (session["user_id"], feedback))
         con.commit()
+        cursor.close()
+        con.close()
         flash("Feedback submitted successfully!")
         return redirect("/")
-    con = get_db_connection()
-    cursor = con.cursor()
-    cursor.execute("SELECT feedback FROM feedback")
-    feedbacks = cursor.fetchall()
-    cursor.close()
-    con.close()
-    return render_template('feedback.html', feedbacks=feedbacks)
+    return render_template('feedback.html')
 
 
 @app.route("/edit_profile", methods=['GET', 'POST'])
