@@ -30,7 +30,7 @@ con = get_db_connection()
 cursor = con.cursor()
 
 cursor.execute('''
-    CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL, username VARCHAR(255) NOT NULL, 
+    CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL, username VARCHAR(255) COLLATE utf8mb4_bin NOT NULL, 
     hash VARCHAR(255) NOT NULL)''')
 
 cursor.execute('''
