@@ -1,14 +1,16 @@
 from flask import Flask, flash, render_template, redirect, session, request
 from werkzeug.security import check_password_hash, generate_password_hash
-from utilities import login_required
 from flask_session import Session
+from utilities import login_required
 import os
-from crewai import Agent, Task, Crew, Process
 import mysql.connector
-
 from dotenv import load_dotenv
+from crewai import Agent, Task, Crew, Process
+
+# Load environment variables
 load_dotenv()
 
+# Initialize Flask app
 app = Flask(__name__)
 
 # Configure session to use filesystem (instead of signed cookies)
@@ -25,34 +27,40 @@ def get_db_connection():
         database=os.getenv("DB_NAME"),
         port=int(os.getenv("DB_PORT"))
     )
-    
-con = get_db_connection()
-cursor = con.cursor()
 
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL, username VARCHAR(255) COLLATE utf8mb4_bin NOT NULL, 
-    hash VARCHAR(255) NOT NULL)''')
+# Create tables if they don't exist
+def create_tables():
+    con = get_db_connection()
+    cursor = con.cursor()
 
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS user_input (
-        id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL, user_id INTEGER NOT NULL,
-        destination VARCHAR(255) NOT NULL, budget INTEGER, duration INTEGER, pace VARCHAR(7),
-        months VARCHAR(50), interests TEXT, dietary_restrictions TEXT,
-        FOREIGN KEY (user_id) REFERENCES users(id))''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL, username VARCHAR(255) COLLATE utf8mb4_bin NOT NULL, 
+        hash VARCHAR(255) NOT NULL)''')
 
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS saved_plans (id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
-        user_id INTEGER NOT NULL, plan_details TEXT NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users(id))''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS user_input (
+            id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL, user_id INTEGER NOT NULL,
+            destination VARCHAR(255) NOT NULL, budget INTEGER, duration INTEGER, pace VARCHAR(7),
+            months VARCHAR(50), interests TEXT, dietary_restrictions TEXT,
+            FOREIGN KEY (user_id) REFERENCES users(id))''')
 
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS feedback (id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
-        user_id INTEGER NOT NULL, feedback TEXT NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users(id))''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS saved_plans (id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
+            user_id INTEGER NOT NULL, plan_details TEXT NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id))''')
 
-con.commit()
-cursor.close()
-con.close()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS feedback (id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
+            user_id INTEGER NOT NULL, feedback TEXT NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id))''')
+
+    con.commit()
+    cursor.close()
+    con.close()
+
+# Call the function to create tables
+create_tables()
+
 
 generated_itinerary = ''
 
@@ -70,55 +78,6 @@ def after_request(response):
 @login_required
 def index():
     return render_template('index.html')
-
-
-# Validate login
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    con = get_db_connection()
-    cursor = con.cursor()
-
-    # User reached route via POST (as by submitting a form via POST)
-    if request.method == "POST":
-        # Query database for username
-        cursor.execute("SELECT * FROM users WHERE username = %s", (request.form.get("username"),))
-        rows = cursor.fetchall()
-
-        cursor.close()
-        con.close()
-
-        # Ensure username exists and password is correct
-        if len(rows) != 1 or not check_password_hash(rows[0][2], request.form.get("password")):
-            flash("Invalid username and/or password")
-            return redirect("/login")
-        
-        # Remember which user has logged in
-        session["user_id"] = rows[0][0]
-        session["username"] = rows[0][1]
-
-        # Redirect user to home page
-        return redirect("/")
-    
-    return render_template("login.html")
-
-
-# Log user out and delete stored user input
-@app.route("/logout")
-def logout():
-    """Log user out"""
-    # Delete stored user input
-    con = get_db_connection()
-    cursor = con.cursor()
-    cursor.execute("DELETE FROM user_input WHERE user_id = %s", (session["user_id"],))
-    con.commit()
-    cursor.close()
-    con.close()
-
-    # Forget any user_id
-    session.clear()
-
-    # Redirect user to login form
-    return redirect("/login")
 
 
 # Create new user account and store in users table
@@ -151,6 +110,158 @@ def register():
     cursor.close()
     con.close()
     return render_template("register.html")
+
+
+# Validate login
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    con = get_db_connection()
+    cursor = con.cursor()
+
+    # User reached route via POST (as by submitting a form via POST)
+    if request.method == "POST":
+        # Query database for username
+        cursor.execute("SELECT * FROM users WHERE username = %s", (request.form.get("username"),))
+        user = cursor.fetchone()
+
+        cursor.close()
+        con.close()
+
+        # Ensure username exists and password is correct
+        if not user or not check_password_hash(user[2], request.form.get("password")):
+            flash("Invalid username and/or password")
+            return redirect("/login")
+        
+        # Remember which user has logged in
+        session["user_id"] = user[0]
+        session["username"] = user[1]
+
+        # Redirect user to home page
+        return redirect("/")
+    
+    return render_template("login.html")
+
+
+# Log user out and delete stored user input
+@app.route("/logout")
+def logout():
+    """Log user out"""
+    # Delete stored user input
+    con = get_db_connection()
+    cursor = con.cursor()
+    cursor.execute("DELETE FROM user_input WHERE user_id = %s", (session["user_id"],))
+    con.commit()
+    cursor.close()
+    con.close()
+
+    # Forget any user_id
+    session.clear()
+
+    # Redirect user to login form
+    return redirect("/login")
+
+
+@app.route("/edit_profile", methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    return render_template('edit_profile.html')
+
+
+# Allow user to change username if new one is available
+@app.route("/change_username", methods=['GET', 'POST'])
+@login_required
+def change_username():
+    if request.method == 'POST':
+        con = get_db_connection()
+        cursor = con.cursor()
+
+        # Change username if new one is available
+        new_username = request.form.get("new_username")
+        cursor.execute("SELECT * FROM users WHERE username = %s", (new_username,))
+        if cursor.fetchone() is not None:
+            flash("Username already exists.")
+            return redirect("/edit_profile")
+        else:
+            cursor.execute('''
+                UPDATE users SET username = %s WHERE id = %s''', (new_username, session["user_id"]))
+            con.commit()
+            cursor.close()
+            con.close()
+            session["username"] = new_username
+            flash("Username changed successfully!")
+            return redirect("/")
+    return render_template('edit_profile.html')
+
+
+# Allow user to change password if all inputs are correct
+@app.route("/change_password", methods=['GET', 'POST'])
+@login_required
+def change_password():
+    if request.method == 'POST':
+        con = get_db_connection()
+        cursor = con.cursor()
+        
+        cursor.execute("SELECT * FROM users WHERE username = %s", (session["username"],))
+        rows = cursor.fetchall()
+
+        # Ensure current password entered is correct
+        if not check_password_hash(rows[0][2], request.form.get("current_password")):
+            flash("Invalid password")
+            return redirect("/edit_profile")
+        
+        new_password = request.form.get("new_password")
+        confirm_new_password = request.form.get("confirm_password")
+
+        # Ensure new password and confirm new password match
+        if new_password != confirm_new_password:
+            flash("Passwords do not match")
+            return redirect("/edit_profile")
+        cursor.execute('''
+            UPDATE users SET hash = %s WHERE id = %s
+            ''', (generate_password_hash(new_password), session["user_id"]))
+        con.commit()
+        cursor.close()
+        con.close()
+        flash("Password changed successfully!")
+        session.clear()
+        return redirect("/login")
+    return render_template('edit_profile.html')
+
+
+# Allow user to delete account and delete all data associated with it from users, user_input and saved_plans tables
+@app.route("/delete_account", methods=['GET', 'POST'])
+@login_required
+def delete_account():
+    if request.method == 'POST':
+        con = get_db_connection()
+        cursor = con.cursor()
+
+        cursor.execute("SELECT * FROM users WHERE username = %s", (session["username"],))
+        rows = cursor.fetchall()
+
+        # Ensure current password entered is correct
+        if not check_password_hash(rows[0][2], request.form.get("current_password")):
+            flash("Invalid password")
+            return redirect("/edit_profile")
+        
+        cursor.execute('''
+            DELETE FROM user_input WHERE user_id = %s''', (session["user_id"],))
+        cursor.execute('''
+            DELETE FROM saved_plans WHERE user_id = %s''', (session["user_id"],))
+        cursor.execute('''
+            DELETE FROM feedback WHERE user_id = %s''', (session["user_id"],))
+        cursor.execute('''
+            DELETE FROM users WHERE id = %s''', (session["user_id"],))
+        con.commit()
+        cursor.close()
+        con.close()
+
+        # Forget user_id
+        session.clear()
+
+        flash("Account deleted successfully!")
+        return redirect("/register")
+    return render_template('edit_profile.html')
 
 
 # Update user input and generate itinerary as per new input
@@ -226,6 +337,27 @@ def save_plan():
     return redirect("/")
 
 
+# Allow user to give feedback on the itinerary and display all stored feedbacks below form
+@app.route("/feedback", methods=['GET', 'POST'])
+@login_required
+def feedback():
+    if request.method == 'POST':
+        con = get_db_connection()
+        cursor = con.cursor()
+        # Get user input from the form
+        feedback = request.form.get("feedback")
+        cursor.execute('''
+            INSERT INTO feedback (user_id, feedback)
+            VALUES (%s, %s)
+        ''', (session["user_id"], feedback))
+        con.commit()
+        cursor.close()
+        con.close()
+        flash("Feedback submitted successfully!")
+        return redirect("/")
+    return render_template('feedback.html')
+
+
 # Show all saved itineraries for the user
 @app.route("/saved_plans")
 @login_required
@@ -253,130 +385,6 @@ def delete_saved_plans():
     con.close()
     flash("Plan deleted successfully!")
     return redirect("/")
-
-
-# Allow user to give feedback on the itinerary and display all stored feedbacks below form
-@app.route("/feedback", methods=['GET', 'POST'])
-@login_required
-def feedback():
-    if request.method == 'POST':
-        con = get_db_connection()
-        cursor = con.cursor()
-        # Get user input from the form
-        feedback = request.form.get("feedback")
-        cursor.execute('''
-            INSERT INTO feedback (user_id, feedback)
-            VALUES (%s, %s)
-        ''', (session["user_id"], feedback))
-        con.commit()
-        cursor.close()
-        con.close()
-        flash("Feedback submitted successfully!")
-        return redirect("/")
-    return render_template('feedback.html')
-
-
-@app.route("/edit_profile", methods=['GET', 'POST'])
-@login_required
-def edit_profile():
-    return render_template('edit_profile.html')
-
-
-# Allow user to change password if all inputs are correct
-@app.route("/change_password", methods=['GET', 'POST'])
-@login_required
-def change_password():
-    if request.method == 'POST':
-        con = get_db_connection()
-        cursor = con.cursor()
-        
-        cursor.execute("SELECT * FROM users WHERE username = %s", (session["username"],))
-        rows = cursor.fetchall()
-
-        # Ensure current password entered is correct
-        if not check_password_hash(rows[0][2], request.form.get("current_password")):
-            flash("Invalid password")
-            return redirect("/edit_profile")
-        
-        new_password = request.form.get("new_password")
-        confirm_new_password = request.form.get("confirm_password")
-
-        # Ensure new password and confirm new password match
-        if new_password != confirm_new_password:
-            flash("Passwords do not match")
-            return redirect("/edit_profile")
-        cursor.execute('''
-            UPDATE users SET hash = %s WHERE id = %s
-            ''', (generate_password_hash(new_password), session["user_id"]))
-        con.commit()
-        cursor.close()
-        con.close()
-        flash("Password changed successfully!")
-        session.clear()
-        return redirect("/login")
-    return render_template('edit_profile.html')
-
-
-# Allow user to change username if new one is available
-@app.route("/change_username", methods=['GET', 'POST'])
-@login_required
-def change_username():
-    if request.method == 'POST':
-        con = get_db_connection()
-        cursor = con.cursor()
-
-        # Change username if new one is available
-        new_username = request.form.get("new_username")
-        cursor.execute("SELECT * FROM users WHERE username = %s", (new_username,))
-        if cursor.fetchone() is not None:
-            flash("Username already exists.")
-            return redirect("/edit_profile")
-        else:
-            cursor.execute('''
-                UPDATE users SET username = %s WHERE id = %s''', (new_username, session["user_id"]))
-            con.commit()
-            cursor.close()
-            con.close()
-            session["username"] = new_username
-            flash("Username changed successfully!")
-            return redirect("/")
-    return render_template('edit_profile.html')
-
-
-# Allow user to delete account and delete all data associated with it from users, user_input and saved_plans tables
-@app.route("/delete_account", methods=['GET', 'POST'])
-@login_required
-def delete_account():
-    if request.method == 'POST':
-        con = get_db_connection()
-        cursor = con.cursor()
-
-        cursor.execute("SELECT * FROM users WHERE username = %s", (session["username"],))
-        rows = cursor.fetchall()
-
-        # Ensure current password entered is correct
-        if not check_password_hash(rows[0][2], request.form.get("current_password")):
-            flash("Invalid password")
-            return redirect("/edit_profile")
-        
-        cursor.execute('''
-            DELETE FROM user_input WHERE user_id = %s''', (session["user_id"],))
-        cursor.execute('''
-            DELETE FROM saved_plans WHERE user_id = %s''', (session["user_id"],))
-        cursor.execute('''
-            DELETE FROM feedback WHERE user_id = %s''', (session["user_id"],))
-        cursor.execute('''
-            DELETE FROM users WHERE id = %s''', (session["user_id"],))
-        con.commit()
-        cursor.close()
-        con.close()
-
-        # Forget user_id
-        session.clear()
-
-        flash("Account deleted successfully!")
-        return redirect("/register")
-    return render_template('edit_profile.html')
 
 
 # Generate itinerary based on the user input found in the table user_input using openAI through groq API.
