@@ -142,7 +142,16 @@
                 <input type="password" placeholder="Current Password" name="current_password" required>
             </div>
             <div class="input-group">
-                <input type="password" placeholder="New Password" name="new_password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}">
+                <input id="new_password" type="password" placeholder="New Password" name="new_password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}">
+            </div>
+            <div class="password-requirements">
+                Password must contain at least:
+                <ul class="mt-2">
+                    <li id="length">8 characters</li>
+                    <li id="uppercase">One uppercase letter</li>
+                    <li id="lowercase">One lowercase letter</li>
+                    <li id="number">One number</li>
+                </ul>
             </div>
             <div class="input-group">
                 <input type="password" placeholder="Confirm New Password" name="confirm_password" required>
@@ -179,6 +188,25 @@
 
             Object.entries(buttons).forEach(([key, button]) => {
                 button.addEventListener('click', () => showForm(key));
+            });
+
+
+            const passwordInput = document.getElementById('new_password');
+            const requirements = {
+                length: { element: document.getElementById('length'), regex: /.{8,}/ },
+                uppercase: { element: document.getElementById('uppercase'), regex: /[A-Z]/ },
+                lowercase: { element: document.getElementById('lowercase'), regex: /[a-z]/ },
+                number: { element: document.getElementById('number'), regex: /[0-9]/ }
+            };
+
+            passwordInput.addEventListener('input', function() {
+                const password = this.value;
+                
+                // Check each requirement
+                for (const [key, requirement] of Object.entries(requirements)) {
+                    const isValid = requirement.regex.test(password);
+                    requirement.element.classList.toggle('valid', isValid);
+                }
             });
         });
     </script>
