@@ -22,7 +22,7 @@ Explore Ease is a web application designed to help users create personalized tra
 ## Installation
 1. Clone this repository: https://github.com/TanishaKothari/explore-ease.git
 2. Navigate to the project directory: `cd explore-ease`
-3. Install the required dependencies: `pip install flask werkzeug flask_session crewai`
+3. Install the required dependencies: `pip install -r requirements.txt`
 4. Run the application: `python app.py`
 5. The .env file stores the API key and database connection details.
 
