@@ -37,7 +37,7 @@ Explore Ease is a web application designed to help users create personalized tra
 8. Logout by clicking on your username and selecting "Logout".
 
 ## Database Structure
-The application uses a MySQL database to store user information and user input. The database contains the following tables:
+The application uses a PostgreSQL database to store user information and user input. The database contains the following tables:
 - users: Stores user information such as the user's ID, username and hashed password.
 - user_input: Stores user input entered in the itinerary generation form until the user logs out.
 - saved_plans: Stores saved itineraries with user ID and plan ID.
@@ -51,4 +51,5 @@ The application is built using the Flask framework in Python. The code is organi
 - app.py: The main Flask application file, which contains the routes, views, and functions for the web application.
 - templates/: A directory containing all the HTML templates used by the application.
 - static/: A directory containing the CSS file.
+
 
