@@ -3,7 +3,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from flask_session import Session
 from utilities import login_required
 import os
-import mysql.connector
+import psycopg2
 from dotenv import load_dotenv
 from crewai import Agent, Task, Crew, Process
 
@@ -20,11 +20,11 @@ Session(app)
 
 # MySQL connection
 def get_db_connection():
-    return mysql.connector.connect(
+    return psycopg2.connect(
         host=os.getenv("DB_HOST"),
         user=os.getenv("DB_USER"),
         password=os.getenv("DB_PASS"),
-        database=os.getenv("DB_NAME"),
+        dbname=os.getenv("DB_NAME"),
         port=int(os.getenv("DB_PORT"))
     )
 
@@ -34,25 +34,24 @@ def create_tables():
     cursor = con.cursor()
 
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL, username VARCHAR(255) COLLATE utf8mb4_bin NOT NULL, 
-        hash VARCHAR(255) NOT NULL)''')
+        CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, username VARCHAR(255) UNIQUE NOT NULL, 
+        hash VARCHAR(255) NOT NULL);''')
 
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS user_input (
-            id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL, user_id INTEGER NOT NULL,
+            id SERIAL PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
             destination VARCHAR(255) NOT NULL, budget INTEGER, duration INTEGER, pace VARCHAR(7),
-            months VARCHAR(50), interests TEXT, dietary_restrictions TEXT,
-            FOREIGN KEY (user_id) REFERENCES users(id))''')
+            months VARCHAR(50), interests TEXT, dietary_restrictions TEXT);''')
 
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS saved_plans (id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
-            user_id INTEGER NOT NULL, plan_details TEXT NOT NULL,
-            FOREIGN KEY (user_id) REFERENCES users(id))''')
+        CREATE TABLE IF NOT EXISTS saved_plans (id SERIAL PRIMARY KEY,
+            user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE, 
+            plan_details TEXT NOT NULL);''')
 
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS feedback (id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
-            user_id INTEGER NOT NULL, feedback TEXT NOT NULL,
-            FOREIGN KEY (user_id) REFERENCES users(id))''')
+        CREATE TABLE IF NOT EXISTS feedback (id SERIAL PRIMARY KEY,
+            user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE, 
+            feedback TEXT NOT NULL)''')
 
     con.commit()
     cursor.close()
@@ -105,10 +104,9 @@ def register():
         hashed_password = generate_password_hash(password)
         cursor.execute("INSERT INTO users (username, hash) VALUES(%s, %s)", (username, hashed_password))
         con.commit()
+        cursor.close()
+        con.close()
         return redirect("/login")
-
-    cursor.close()
-    con.close()
     return render_template("register.html")
 
 
@@ -207,6 +205,8 @@ def change_password():
         # Ensure current password entered is correct
         if not check_password_hash(rows[0][2], request.form.get("current_password")):
             flash("Invalid password")
+            cursor.close()
+            con.close()
             return redirect("/edit_profile")
         
         new_password = request.form.get("new_password")
@@ -215,6 +215,8 @@ def change_password():
         # Ensure new password and confirm new password match
         if new_password != confirm_new_password:
             flash("Passwords do not match")
+            cursor.close()
+            con.close()
             return redirect("/edit_profile")
         cursor.execute('''
             UPDATE users SET hash = %s WHERE id = %s
@@ -242,6 +244,8 @@ def delete_account():
         # Ensure current password entered is correct
         if not check_password_hash(rows[0][2], request.form.get("current_password")):
             flash("Invalid password")
+            cursor.close()
+            con.close()
             return redirect("/edit_profile")
         
         cursor.execute('''
@@ -435,4 +439,5 @@ def generate_itinerary():
 
 if __name__ == '__main__':
     port = os.environ.get('PORT', 5000)
+
     app.run(port=port)
