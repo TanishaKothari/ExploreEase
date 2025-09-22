@@ -27,7 +27,7 @@ Explore Ease is a web application designed to help users create personalized tra
 5. The .env file stores the API key and database connection details.
 
 ## Usage
-1. Acess the live web application at [ExploreEase](https://exploreease-4cf23960f067.herokuapp.com/).
+1. Acess the live web application at [ExploreEase](https://exploreease-w7ps.onrender.com/login).
 2. Register an account by clicking the "Register" link and providing a valid username and password.
 3. Log in to your account using the details provided during the registration.
 4. Fill out the travel preferences form to generate a personalized travel itinerary.
@@ -51,3 +51,4 @@ The application is built using the Flask framework in Python. The code is organi
 - app.py: The main Flask application file, which contains the routes, views, and functions for the web application.
 - templates/: A directory containing all the HTML templates used by the application.
 - static/: A directory containing the CSS file.
+
